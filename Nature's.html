@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Bases</title>
+    <!-- estilo css -->
+    <style>
+        :root {
+            /*serve para fazer a inicialização de variáeis no css*/
+            --cor-primaria: #2C5F2D;
+            --color-text-light: #54392D;
+            --color-button-bg: #E7C978;
+            --color-button-text: #2C5F2D;
+            --color-button-hover: #D7B45F;
+            --color-input-bg: #F4F0E8;
+
+            /* tamanho e raio de borda */
+            --spacing-small: 8px;
+            --spacing-medium: 20px;
+            --font-size-default: 16px;
+            --border-radius-default: 17px;
+        }
+
+        /* Corpo da página */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--color-text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: url('montanha.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center center;
+        }
+
+        /* Container principal*/
+        #container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            max-width: 600px;
+            margin: 80px auto;
+            border-radius: var(--border-radius-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: var(--cor-primaria);
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        /* Estilo para a frase "Converter para:" */
+        h4 {
+            color: var(--color-text-light);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"],
+        select {
+            padding: var(--spacing-small);
+            font-size: var(--font-size-default);
+            border-radius: var(--border-radius-default);
+            border: 1px solid var(--cor-primaria);
+            background-color: var(--color-input-bg);
+            color: var(--color-text-light);
+        }
+
+
+        /* ESTILOS PARA SAÍDA DE RESULTADOS (opcional, caso você tenha o #output) */
+        #output {
+            margin-top: var(--spacing-medium);
+            padding: var(--spacing-small);
+            border-radius: var(--border-radius-default);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--cor-primaria);
+            text-align: left;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="container">
+        <h1>Eric's Nature Logic</h1>
+
+        <input id="inputValue" type="text" placeholder="Digite o valor" onkeyup="converter()">
+
+        <select id="inputBase" onchange="converter()">
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="octal">Octal</option>
+            <option value="binario">Binário</option>
+        </select><br><br>
+
+       <div id="saidasAutomaticas">
+            <p>Decimal: <input type="text" id="outputDecimal" disabled></p>
+            <p>Hexadecimal: <input type="text" id="outputHexadecimal" disabled></p>
+            <p>Octal: <input type="text" id="outputOctal" disabled></p>
+            <p>Binário: <input type="text" id="outputBinario" disabled></p>
+        </div>
+
+    </div>
+    <script>
+        // função para converter os valores
+        function converter() {
+            var inputValue = document.getElementById('inputValue').value; // pega o valor de entrada
+            var inputBase = document.getElementById('inputBase').value; // pega a base de entrada
+
+             function limparSaidas() {
+                document.getElementById('outputDecimal').value = '';
+                document.getElementById('outputHexadecimal').value = '';
+                document.getElementById('outputOctal').value = '';
+                document.getElementById('outputBinario').value = '';
+            }
+
+            // Se o campo estiver vazio ou for apenas espaços, limpa e sai
+            if (inputValue === '') {
+                limparSaidas();
+                return;
+            }
+
+           // converte o valor de entrada para a base decimal
+            let baseNumerica;
+            switch (inputBase) {
+                case 'hexadecimal':
+                    baseNumerica = 16;
+                    break;
+                case 'octal':
+                    baseNumerica = 8;
+                    break;
+                case 'binario':
+                    baseNumerica = 2;
+                    break;
+                case 'decimal':
+                default:
+                    baseNumerica = 10;
+                    break;
+            }
+
+            var decimalValue = parseInt(inputValue, baseNumerica);
+
+            // confirma se a conversão para decimal foi bem-sucedida
+            if (isNaN(decimalValue)) {
+                limparSaidas();
+                return; 
+            }
+
+            // converte o valor decimal
+            var hexValue = decimalValue.toString(16).toUpperCase();
+            var octalValue = decimalValue.toString(8);
+            var binarioValue = decimalValue.toString(2);
+
+            // atualiza os campos de saída fixos
+            document.getElementById('outputDecimal').value = decimalValue;
+            document.getElementById('outputHexadecimal').value = hexValue;
+            document.getElementById('outputOctal').value = octalValue;
+            document.getElementById('outputBinario').value = binarioValue;
+        }
+
+        // Função para validar a entrada de acordo com a base selecionada
+        function validarEntrada(inputValue, inputBase) {
+
+            var validChars = '';
+
+            // determina os caracteres válidos com base na base selecionada
+            if (inputBase === 'decimal') {
+                validChars = '0123456789'; // Para base decimal
+            } else if (inputBase === 'hexadecimal') {
+                validChars = '0123456789ABCDEFabcdef'; // Para base hexadecimal
+            } else if (inputBase === 'octal') {
+                validChars = '01234567'; // Para base octal
+            } else if (inputBase === 'binario') {
+                validChars = '01'; // Para base binária
+            }
+
+            // Verifica se cada caractere da entrada está presente na lista de caracteres válidos
+            for (var i = 0; i < inputValue.length; i++) {
+                if (validChars.indexOf(inputValue[i]) === -1) { // Se o caractere não for encontrado na lista de caracteres válidos
+                    return false; // Retorna falso indicando que a entrada é inválida
+                }
+            }
+            return true; // Retorna verdadeiro indicando que a entrada é válida
+        }
+    </script>
+</body>
+
+</html>
